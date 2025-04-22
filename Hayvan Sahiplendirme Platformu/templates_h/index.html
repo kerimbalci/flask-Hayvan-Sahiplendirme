@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hayvan Sahiplendirme</title>
+    <style>
+        html, body {
+            background-image: url('static/uploads/arka_plan.png');
+            height: 100%;
+            margin: 0;
+            padding: 0;
+            font-family: Arial, sans-serif;
+            
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-start;
+            overflow-y: auto;
+        }
+
+        .container {
+            background-color: #fff;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            width: 80%;
+            max-width: 800px;
+            margin: 20px auto;
+            text-align: center;
+            flex: 1;
+        }
+
+        h1, h2 {
+            color: #333;
+        }
+
+        form {
+            margin-bottom: 20px;
+        }
+
+        input, select {
+            width: 100%;
+            padding: 10px;
+            margin: 8px 0;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            font-size: 16px;
+            box-sizing: border-box;
+        }
+
+        button {
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            width: 100%;
+            margin-top: 10px;
+        }
+
+        button:hover {
+            background-color: #45a049;
+        }
+
+        ul {
+            list-style-type: none;
+            padding: 0;
+        }
+
+        li {
+            background-color: #fff;
+            padding: 10px;
+            border-radius: 5px;
+            margin-bottom: 10px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        li form {
+            display: inline;
+        }
+
+        li form input, li form select {
+            width: auto;
+            margin-right: 10px;
+        }
+
+        .section-header {
+            font-size: 20px;
+            margin-bottom: 15px;
+            color: #333;
+        }
+
+        .actions {
+            margin-top: 10px;
+        }
+
+        .actions button {
+            width: auto;
+            margin-right: 10px;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        .visible {
+            display: block;
+        }
+    </style>
+</head>
+<body>
+    
+    <div class="container">
+        <h1>Hayvan Sahiplendirme</h1>
+
+        <!-- Hayvan Ekleme Formu -->
+        <h2 class="section-header">Hayvan Ekleyin</h2>
+        <form action="/ekle" method="post">
+            <input type="text" name="hayvan_turu" placeholder="Hayvan Türü" required>
+            <input type="text" name="hayvan_saglik" placeholder="Sağlık Durumu" required>
+            <input type="number" name="hayvan_yasi" placeholder="Yaş" required>
+            <button type="submit">Ekle</button>
+            
+        </form>
+
+        <!-- Mevcut Hayvanlar -->
+        <h2 class="section-header">Mevcut Hayvanlar</h2>
+        <ul>
+            {% for hayvan in hayvanlar %}
+                <li>
+                    <strong>{{ hayvan[1] }}</strong> - {{ hayvan[2] }} - {{ hayvan[3] }}
+                    <div class="actions">
+                        <form action="/guncelle/{{ hayvan[0] }}" method="post" style="display:inline;">
+                            <input type="text" name="hayvan_turu" value="{{ hayvan[1] }}">
+                            <input type="text" name="hayvan_saglik" value="{{ hayvan[2] }}">
+                            <input type="number" name="hayvan_yasi" value="{{ hayvan[3] }}">
+                            <select name="sahiplenme_durumu" class="sahiplenme-durumu" data-id="{{ hayvan[0] }}">
+                                <option value="Sahiplenilmedi">Sahiplenilmedi</option>
+                                <option value="Sahiplenildi">Sahiplenildi</option>
+                            </select>
+                            <button type="submit">Güncelle</button>
+                        </form>
+                       
+                    </div>
+                </li>
+            {% endfor %}
+        </ul>
+
+        <!-- Sahiplenilen Hayvanlar -->
+        <h2 class="section-header">Sahiplenilen Hayvanlar</h2>
+        <ul>
+            {% for sahiplenilen in sahiplenilenler %}
+                <li>
+                    {{ sahiplenilen[1] }} - {{ sahiplenilen[2] }} - {{ sahiplenilen[3] }}
+                    <form action="/sil/{{ sahiplenilen[0] }}" method="post" style="display:inline;">
+                        <input type="hidden" name="_method" value="DELETE">
+                        <button type="submit">Sil</button>
+                    </form>
+                    <ul>
+                       
+                    </ul>
+                </li>
+            {% endfor %}
+        </ul>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const durumSelectElements = document.querySelectorAll('.sahiplenme-durumu');
+
+            durumSelectElements.forEach(select => {
+                select.addEventListener('change', function () {
+                    const hayvanId = this.dataset.id;
+                    const form = document.getElementById(`sahiplen-form-${hayvanId}`);
+                    if (this.value === 'Sahiplenildi') {
+                        form.style.display = 'block';
+                    } else {
+                        form.style.display = 'none';
+                    }
+                });
+            });
+        });
+    </script>
+</body>
+</html>
