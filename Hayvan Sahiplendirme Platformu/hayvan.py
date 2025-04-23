@@ -4,14 +4,14 @@ import mysql.connector
 
 
 hayvan = Flask(__name__, template_folder='templates_h') 
-hayvan.secret_key = 'your_secret_key'
+hayvan.secret_key = ''
 
 
 db = mysql.connector.connect( 
-    host="localhost",
-    user="root", 
-    password="1234", 
-    database="hayvan" 
+    host="",
+    user="", 
+    password="", 
+    database="" 
 )
 
 cursor = db.cursor() 
